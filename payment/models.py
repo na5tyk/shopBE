@@ -3,14 +3,15 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from order.models import Order
 
-# Create your models here.
+
 class PaymentMethods(models.Model):
     name = models.CharField(_("Payment name"), max_length=200)
     active = models.BooleanField(_("Active"), default=False)
 
     def __str__(self):
-        return self.name
+        return self.name2
 
 class Payment(models.Model):
     STATUSES = (

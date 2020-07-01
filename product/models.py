@@ -16,5 +16,7 @@ class Product(models.Model):
     price = models.FloatField(_("Price"), default=0)
     amount = models.FloatField(_("Amount"), default=0)
 
+    categories = models.ManyToManyField(ProductCategory)
+
     def __str__(self):
         return self.name
