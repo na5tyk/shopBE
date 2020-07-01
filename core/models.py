@@ -8,6 +8,65 @@ from django.utils.translation import ugettext_lazy as _
 
 from .managers import UserManager
 
+class UserRole(models.Model):
+    USER = 'user'
+    USER_DISPLAY = _('User')
+    USER_INDEX = 20
+
+    MOD = 'mod'
+    MOD_DISPLAY = _('Moderator')
+    MOD_INDEX = 40
+
+    ADMIN = 'administrator'
+    ADMIN_DISPLAY = _('Administrator')
+    ADMIN_INDEX = 60
+
+    SUPERADMIN_INDEX = 100
+
+    ROLE_CHOICES = (
+        (
+            USER,
+            USER_DISPLAY,
+        ),
+        (
+            MOD,
+            MOD_DISPLAY,
+        ),
+        (
+            ADMIN,
+            ADMIN_DISPLAY,
+        )
+    )
+
+    ROLES_INDEXED = (
+        (
+            USER,
+            USER_INDEX,
+        ),
+        (
+            MOD,
+            MOD_INDEX,
+        ),
+        (
+            ADMIN,
+            ADMIN_INDEX,
+        )
+    )
+
+    ENUMERATE_ROLE_CHOICES = {role[0]: role[1] for index, role in enumerate(ROLES_INDEXED)}
+
+    name = models.CharField(
+        _('Role name'),
+        max_length=32,
+        choices=ROLE_CHOICES,
+    )
+
+    index = models.IntegerField(
+        null=False,
+        blank=False,
+        default=20
+    )
+    
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('Email'), unique=True)
@@ -19,6 +78,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(_('Is Super User'), default=False)
 
     phone = models.CharField(_("Phone"), max_length=16)
+    role = models.OneToOneField(UserRole, on_delete=models.DO_NOTHING, blank=True, null=True)
 
     created = models.DateTimeField(_('Date joined'), auto_now_add=True)
 
@@ -39,6 +99,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         '''
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    def get_user_role_index(self):
+        if self.is_superuser:
+            return UserRole.SUPERADMIN_INDEX
+    
+        return self.role.index
 
 
 class UserAddress(models.Model):
