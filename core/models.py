@@ -77,7 +77,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(_('Staff'), default=False)
     is_superuser = models.BooleanField(_('Is Super User'), default=False)
 
-    phone = models.CharField(_("Phone"), max_length=16)
+    phone = models.CharField(_("Phone"), max_length=16, blank=True, null=True)
     role = models.OneToOneField(UserRole, on_delete=models.DO_NOTHING, blank=True, null=True)
 
     created = models.DateTimeField(_('Date joined'), auto_now_add=True)
